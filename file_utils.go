@@ -2,6 +2,7 @@ package tecutils
 
 import (
 	"io/ioutil"
+	"os"
 	"strings"
 )
 
@@ -22,4 +23,15 @@ func GetFiles(dirname, suffix string) []matchedFiles {
 		}
 	}
 	return res
+}
+
+func DirectoryExists(filePath string) (ok bool) {
+	_, err := os.Stat(filePath)
+	if err == nil {
+		ok = true
+	}
+	if os.IsNotExist(err) {
+		ok = false
+	}
+	return
 }
