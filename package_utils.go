@@ -7,6 +7,7 @@ import (
 	"path"
 )
 
+//Devuelve la ruta local de un package de go
 func GetPackageFullPath(name string) (result string, err error) {
 	goPath := os.Getenv("GOPATH")
 	result = path.Join(goPath, "src", name)
