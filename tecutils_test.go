@@ -48,9 +48,3 @@ func TestPackageFullPath(t *testing.T) {
 	assert.NoError(t, err)
 	log.Println("this package's path is:", result)
 }
-
-func TestExecutableDirectory(t *testing.T) {
-	curr, err := GetExecutableDirectory()
-	assert.NoError(t, err)
-	log.Println("Current directory is:", curr)
-}

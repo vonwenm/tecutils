@@ -1,7 +1,6 @@
 package tecutils
 
 import (
-	"github.com/kardianos/osext"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -35,8 +34,4 @@ func DirectoryExists(filePath string) (ok bool) {
 		ok = false
 	}
 	return
-}
-
-func GetExecutableDirectory() (string, error) {
-	return osext.ExecutableFolder()
 }
