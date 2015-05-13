@@ -2,6 +2,7 @@ package tecutils
 
 import (
 	"io/ioutil"
+	"math"
 	"os"
 	"path"
 	"time"
@@ -52,7 +53,8 @@ func ProcessDirectoryContents(fullpath string, recursive bool, fn FileLambda) (e
 	return
 }
 
-func FileDaysOld(f *os.FileInfo) float64 {
+func FileDaysOld(f *os.FileInfo) int {
 	file := *f
-	return time.Now().Sub(file.ModTime()).Hours() / 24
+	interval := time.Now().Sub(file.ModTime()).Hours() / 24
+	return int(math.Floor(interval))
 }
