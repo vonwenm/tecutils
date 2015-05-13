@@ -11,7 +11,7 @@ import (
 func GetPackageFullPath(name string) (result string, err error) {
 	goPath := os.Getenv("GOPATH")
 	result = path.Join(goPath, "src", name)
-	if !DirectoryExists(result) {
+	if ok := DirectoryExists(result); !ok {
 		err = errors.New(fmt.Sprintf("Package %s does not exist", name))
 		result = ""
 	}

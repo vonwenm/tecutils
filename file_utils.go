@@ -3,35 +3,56 @@ package tecutils
 import (
 	"io/ioutil"
 	"os"
-	"strings"
+	"path"
+	"time"
 )
 
-type matchedFiles struct {
-	File  string `json:"fileName"`
-	Theme string `json:"theme"`
+const (
+	DEFAULT_PERMISSION = 0777
+)
+
+//Returns true if the directory exists
+func DirectoryExists(fullpath string) (ok bool) {
+	fileInfo, err := os.Lstat(fullpath)
+	if err != nil {
+		ok = false
+		return
+	}
+	ok = len(fileInfo.Name()) != 0
+	return
 }
 
-func GetFiles(dirname, suffix string) []matchedFiles {
-	files, _ := ioutil.ReadDir(dirname)
-	res := make([]matchedFiles, 0)
-	for _, f := range files {
-		if strings.HasSuffix(f.Name(), suffix) && len(f.Name()) != 0 && !f.IsDir() {
-			var item matchedFiles
-			item.File = f.Name()
-			item.Theme = strings.Replace(item.File, suffix, "", -1)
-			res = append(res, item)
+//Verifies if the directory already exists, if it does not then it is created
+func CreateDirectoryIfNotExist(fullpath string) (err error) {
+	ok := DirectoryExists(fullpath)
+	if ok {
+		return
+	}
+	err = os.MkdirAll(fullpath, DEFAULT_PERMISSION)
+	return
+}
+
+type FileLambda func(fullpath string, f *os.FileInfo)
+
+//Reads a directory content recursively and process the lambda code inside
+func ProcessDirectoryContents(fullpath string, recursive bool, fn FileLambda) (err error) {
+	files, err := ioutil.ReadDir(fullpath)
+	if err != nil {
+		return
+	}
+	for _, file := range files {
+		if file.IsDir() && recursive {
+			ProcessDirectoryContents(path.Join(fullpath, file.Name()), recursive, fn)
+		}
+		if fn != nil {
+			fn(fullpath, &file)
 		}
 	}
-	return res
+
+	return
 }
 
-func DirectoryExists(filePath string) (ok bool) {
-	_, err := os.Stat(filePath)
-	if err == nil {
-		ok = true
-	}
-	if os.IsNotExist(err) {
-		ok = false
-	}
-	return
+func FileDaysOld(f *os.FileInfo) float64 {
+	file := *f
+	return time.Now().Sub(file.ModTime()).Hours() / 24
 }
